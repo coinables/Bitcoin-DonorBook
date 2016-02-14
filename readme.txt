@@ -8,9 +8,7 @@ Signing guestbooks gave users a feel that they were part of the site.
 This is a new adaptation to guestbooks using bitcoin, posts will only show if the 
 user pays/donates to the address. 
 
-**Since it uses BC.info receive payment API the user must send at least 0.0001 for it to work.
-
-No account with blockchain.info required.
+You will need a blockchain.info API Key https://api.blockchain.info/v2/apikey/request/
 
 1. Open the setup.php file and enter in your database info (name, username and password)
 2. Save the changes to setup.php and run the file on your server to create the table.
