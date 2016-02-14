@@ -21,9 +21,9 @@ if(isset($_POST['donateSubmit'])){
   $postid = md5($genR);
   //check if empty
   if(!isset($_POST['donorName']) || trim($_POST['donorName']) ==''){
-    $errMsg = "You must enter a name";
+    $displayMsg = "You must enter a name";
   } else if(!isset($_POST['donorNote']) || trim($_POST['donorNote']) ==''){
-    $errMsg = "You must enter a note";
+    $displayMsg = "You must enter a note";
   } else {
   $donorName = $_POST['donorName'];
   $donorNote = $_POST['donorNote'];
@@ -40,7 +40,7 @@ if(isset($_POST['donateSubmit'])){
 		curl_setopt($ch, CURLOPT_URL, $receive_url);
 		$ccc = curl_exec($ch);
 		$json = json_decode($ccc, true);
-		$errMsg = "Please Send Donation to <a href='bitcoin:".$json["address"]."'>".$json["address"]."</a><br>
+		$displayMsg = "Please Send Donation to <a href='bitcoin:".$json["address"]."'>".$json["address"]."</a><br>
 		<img src='http://chart.googleapis.com/chart?chs=125x125&cht=qr&chl=".$json["address"]."' width='125'>";
 		}
 }
@@ -134,6 +134,6 @@ function noteLimit(element, stopAt)
 <input type="text" name="donorNote" id="donorNote" placeholder="Note up to 120 characters" size="40" maxlength="120" onkeydown="noteLimit(this, 120);" onkeyup="noteLimit(this, 120);">
 <input type="submit" name="donateSubmit" id="donateSubmit" value="Donate">
 </form>
-<?php echo $errMsg; ?>
+<?php if(isset($displayMsg)){ echo $displayMsg; } ?>
 <br>
 </html>
