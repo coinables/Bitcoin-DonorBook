@@ -2,7 +2,8 @@
 
 //UPDATE THESE VARIABLES
 $secret = "8cdPldf24f";   //CREATE A SECRET CODE FOR CALLBACK, MUST BE THE SAME ON THE CALLBACK PAGE
-$my_address = "1J9ikqFuwrzPbczsDkquA9uVYeq6dEehsj"; //UPDATE TO YOUR BTC ADDRESS	
+$api_key = "asdf321-asdf321-df54f2";  //Your blockchain.info receive payments API key
+$xpub = "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8"; //UPDATE TO YOUR xPub BIP32 Key	
 $siteRoot = "http://mysite.com/";  //CHANGE TO YOUR WEBSITE ROOT
 $dbuser = "dbuser";          //CHANGE TO YOUR DB USERNAME
 $dbpassword = "dbpassword";     //CHANGE TO YOUR DB PASSWORD
@@ -31,13 +32,18 @@ if(isset($_POST['donateSubmit'])){
   $donorNote = mysqli_real_escape_string($conn, $donorNote);
   mysqli_query($conn, "INSERT INTO donate (postid, donor, note) VALUES ('$postid', '$donorName', '$donorNote')");
 		//generate address
-		$callback = $siteRoot."donorcallback.php?postid=".$postid."&secret=".$secret;
-		$donResponse = json_decode(file_get_contents("https://blockchain.info/api/receive?method=create&address=".$my_address."&callback=".urlencode($callback)), true);
-		$errMsg = "Please Send Donation to <a href='bitcoin:".$donResponse["input_address"]."'>".$donResponse["input_address"]."</a><br>
-		<img src='http://chart.googleapis.com/chart?chs=125x125&cht=qr&chl=".$donResponse["input_address"]."' width='125'>";
+		$callback_url = $siteRoot."donorcallback.php?postid=".$postid."&secret=".$secret;
+		$receive_url = "https://api.blockchain.info/v2/receive?key=".$api_key."&xpub=".$xpub."&callback=".urlencode($callback_url);
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_URL, $receive_url);
+		$ccc = curl_exec($ch);
+		$json = json_decode($ccc, true);
+		$errMsg = "Please Send Donation to <a href='bitcoin:".$json["address"]."'>".$json["address"]."</a><br>
+		<img src='http://chart.googleapis.com/chart?chs=125x125&cht=qr&chl=".$json["address"]."' width='125'>";
 		}
 }
-mysqli_close();
 
 ?>
 
@@ -110,7 +116,6 @@ while($outputs=mysqli_fetch_assoc($result)){
 	echo "</tr>";
 }	
 
-mysqli_close();
 
 ?>
 </table><br><span id="donorTxt">You can post to the donor book too! Fill out the below and send a few bits.</span><br>
